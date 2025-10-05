@@ -4,7 +4,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Currency } from '../../models/currency';
-import { filter } from 'rxjs';
+import { filter, map, pairwise, tap } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
 
 export interface CurrencyConverterFormType {
@@ -46,7 +46,23 @@ export class CurrencyConverterFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.form.valueChanges
-      .pipe(filter((value) => !!value.fromCurrency && !!value.toCurrency && !!value.fromValue))
+      .pipe(
+        pairwise(),
+        filter(([previous, current]) => this.isInputChanged(previous, current)),
+        map(([_, current]) => current),
+        filter((value) => !!value.fromCurrency && !!value.toCurrency && !!value.fromValue)
+      )
       .subscribe((value) => this.formChanged.emit(value));
+  }
+
+  private isInputChanged(
+    previous: CurrencyConverterFormValue,
+    current: CurrencyConverterFormValue
+  ) {
+    return (
+      previous.fromCurrency !== current.fromCurrency ||
+      previous.fromValue !== current.fromValue ||
+      previous.toCurrency !== current.toCurrency
+    );
   }
 }

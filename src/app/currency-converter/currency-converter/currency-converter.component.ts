@@ -25,7 +25,7 @@ export class CurrencyConverterComponent implements OnInit {
     this.currencies$ = this.currencyService.getCurrencies();
 
     this.convertedCurrency$ = this.convertCurrency$.pipe(
-      debounceTime(300),
+      debounceTime(500),
       switchMap((params: CurrencyConverterFormValue) =>
         this.currencyService.convert(params.fromCurrency!, params.toCurrency!, params.fromValue!)
       )
