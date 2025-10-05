@@ -37,5 +37,5 @@ export class CurrencyService {
       );
 
   private sortCurrencies = (currencies: Currency[]): Currency[] =>
-    currencies.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+    currencies.sort((a, b) => (a.name > b.name ? 1 : -1));
 }
