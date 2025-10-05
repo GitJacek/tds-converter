@@ -1,0 +1,22 @@
+<form [formGroup]="form">
+  <mat-form-field>
+    <input formControlName="fromValue" matInput>
+  </mat-form-field>
+  <mat-form-field>
+  <mat-select formControlName="fromCurrency">
+    @for (currency of currencies(); track currency.id) {
+      <mat-option [value]="currency">{{currency.name}}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+  <mat-form-field>
+    <input formControlName="toValue" [value]="form.controls.toValue.value| number: '1.0-2'" matInput>
+  </mat-form-field>
+  <mat-form-field>
+  <mat-select formControlName="toCurrency">
+    @for (currency of currencies(); track currency.id) {
+      <mat-option [value]="currency">{{currency.name}}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+</form>

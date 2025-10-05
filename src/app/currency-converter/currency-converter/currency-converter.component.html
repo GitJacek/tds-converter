@@ -1,0 +1,8 @@
+<p>currency-converter works!</p>
+@let currencies = (currencies$ | async);
+@if (currencies) {
+  <app-currency-converter-form [currencies]="currencies" [convertedCurrency]="(convertedCurrency$ | async)!" (formChanged)="onFormChange($event)"></app-currency-converter-form>
+} @else {
+  <mat-spinner></mat-spinner>
+
+}
