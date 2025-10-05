@@ -2,12 +2,14 @@
 <div class="container">
   @if (currencies) {
   <div>
+    <mat-label>From</mat-label>
     <app-currency-value-form
       [currencies]="currencies"
       (formChanged)="onFromFormChange($event)"
     ></app-currency-value-form>
   </div>
   <div>
+    <mat-label>To</mat-label>
     <app-currency-value-form
       [currencies]="currencies"
       [convertedCurrency]="(toConvertedCurrency$ | async)!"

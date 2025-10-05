@@ -11,10 +11,11 @@ import {
 } from '../currency-value-form/currency-value-form.component';
 import { ConvertCurrencyPayload } from '../../models/convert-currency-payload';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { MatLabel } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-currency-converter',
-  imports: [AsyncPipe, MatProgressSpinnerModule, CurrencyValueFormComponent],
+  imports: [AsyncPipe, MatProgressSpinnerModule, CurrencyValueFormComponent, MatLabel],
   templateUrl: './currency-converter.component.html',
   styleUrl: './currency-converter.component.scss',
 })
