@@ -3,6 +3,7 @@ import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Currency } from '../models/currency';
+import { ConvertCurrencyPayload } from '../models/convert-currency-payload';
 
 @Injectable({
   providedIn: 'root',
@@ -16,10 +17,10 @@ export class CurrencyService {
       .get(`${this.baseUrl}/currencies?type=fiat`)
       .pipe(map((response: any) => this.sortCurrencies(response.response)));
 
-  convert = (fromCurrency: Currency, toCurrency: Currency, amount: number): Observable<number> =>
+  convert = (payload: ConvertCurrencyPayload): Observable<string> =>
     this.httpClient
       .get(
-        `${this.baseUrl}/convert?from=${fromCurrency.short_code}&to=${toCurrency.short_code}&amount=${amount}`
+        `${this.baseUrl}/convert?from=${payload.fromCurrency!.short_code}&to=${payload.toCurrency!.short_code}&amount=${payload!.amount}`
       )
       .pipe(map((response: any) => response.response.value));
 

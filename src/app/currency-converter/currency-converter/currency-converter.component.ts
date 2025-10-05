@@ -1,38 +1,51 @@
-import { Component, inject, OnInit } from '@angular/core';
-import {
-  CurrencyConverterFormComponent,
-  CurrencyConverterFormValue,
-} from '../currency-converter-form/currency-converter-form.component';
+import { Component, inject, signal } from '@angular/core';
+
 import { CurrencyService } from '../currency.service';
-import { debounceTime, Observable, Subject, switchMap } from 'rxjs';
+import { debounceTime, filter, Observable, of, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Currency } from '../../models/currency';
+import {
+  CurrencyValue,
+  CurrencyValueFormComponent,
+} from '../currency-value-form/currency-value-form.component';
+import { ConvertCurrencyPayload } from '../../models/convert-currency-payload';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-currency-converter',
-  imports: [CurrencyConverterFormComponent, AsyncPipe, MatProgressSpinnerModule],
+  imports: [AsyncPipe, MatProgressSpinnerModule, CurrencyValueFormComponent],
   templateUrl: './currency-converter.component.html',
   styleUrl: './currency-converter.component.scss',
 })
-export class CurrencyConverterComponent implements OnInit {
-  currencies$!: Observable<Currency[]>;
-  convertedCurrency$ = new Observable<number>();
-  convertCurrency$ = new Subject<CurrencyConverterFormValue>();
+export class CurrencyConverterComponent {
+  currencies$: Observable<Currency[]>;
+  toConvertedCurrency$: Observable<string>;
+  convertCurrencyPayload = signal<ConvertCurrencyPayload>({});
   private currencyService = inject(CurrencyService);
 
-  ngOnInit(): void {
-    this.currencies$ = this.currencyService.getCurrencies();
-
-    this.convertedCurrency$ = this.convertCurrency$.pipe(
+  constructor() {
+    this.toConvertedCurrency$ = toObservable(this.convertCurrencyPayload).pipe(
+      filter((payload: ConvertCurrencyPayload) => !!payload.fromCurrency && !!payload.toCurrency),
       debounceTime(500),
-      switchMap((params: CurrencyConverterFormValue) =>
-        this.currencyService.convert(params.fromCurrency!, params.toCurrency!, params.fromValue!)
-      )
+      switchMap((params: ConvertCurrencyPayload) => params.amount ? this.currencyService.convert(params) : of(''))
     );
+    this.currencies$ = this.currencyService.getCurrencies();
   }
 
-  onFormChange(formValue: CurrencyConverterFormValue) {
-    this.convertCurrency$.next(formValue);
+  onFromFormChange(formValue: CurrencyValue) {
+    this.convertCurrencyPayload.set({
+      ...this.convertCurrencyPayload(),
+      fromCurrency: formValue.currency,
+      amount: formValue.value,
+    });
+
+  }
+
+  onToFormChange(formValue: CurrencyValue) {
+    this.convertCurrencyPayload.set({
+      ...this.convertCurrencyPayload(),
+      toCurrency: formValue.currency,
+    });
   }
 }
